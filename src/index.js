@@ -11,15 +11,20 @@ import GlobalStyles from './utils/global';
 
 import { BrowserRouter } from 'react-router-dom';
 
+import { Provider } from 'react-redux';
+import store from './store';
+
 ReactDOM.render(
-  <BrowserRouter>
-    <ThemeProvider theme={theme}>
-      <>
-        <App />
-        <GlobalStyles></GlobalStyles>
-      </>
-    </ThemeProvider>
-  </BrowserRouter>,
+  <Provider store={store}>
+    <BrowserRouter>
+      <ThemeProvider theme={theme}>
+        <>
+          <App />
+          <GlobalStyles></GlobalStyles>
+        </>
+      </ThemeProvider>
+    </BrowserRouter>
+  </Provider>,
   document.getElementById('root')
 );
 serviceWorker.unregister();
