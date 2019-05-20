@@ -53,7 +53,7 @@ const Menu = styled.div`
   }
 `;
 
-const SideDrawer = (props) => {
+const SideDrawer = ({ loggedIn }) => {
   const [ isOpenState, setOpenStateHandler ] = useState(false);
 
   const toggleDrawerHandler = () => {
@@ -71,7 +71,7 @@ const SideDrawer = (props) => {
         </Wrapper>
       </FixedWrapper>
       <Menu open={isOpenState}>
-        <NavItems clicked={() => { setOpenStateHandler(false) }} mobile={true} />
+        <NavItems loggedIn={loggedIn} clicked={() => { setOpenStateHandler(false) }} mobile={true} />
       </Menu>
     </>
   );

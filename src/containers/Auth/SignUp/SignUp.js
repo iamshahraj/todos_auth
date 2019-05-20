@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import { Formik, Field } from 'formik';
+
+import { connect } from 'react-redux';
 
 import * as Yup from 'yup';
 import { FormWrapper, StyledForm } from '../../../hoc/layout/elements';
@@ -8,6 +10,11 @@ import { FormWrapper, StyledForm } from '../../../hoc/layout/elements';
 import Input from '../../../components/UI/Forms/Input/Input';
 import Button from '../../../components/UI/Forms/Button/Button';
 import Heading from '../../../components/UI/Forms/Heading/Heading';
+import Message from '../../../components/UI/Forms/Message/Message';
+
+import * as actions from '../../../store/actions';
+
+import styled from 'styled-components';
 
 const SignUpSchema = Yup.object().shape({
 	firstName: Yup.string()
@@ -22,13 +29,24 @@ const SignUpSchema = Yup.object().shape({
 		.email('Invalid email!')
 		.required('The Email field is required!'),
 	password: Yup.string()
-		.required('The Password field is required!  '),
+		.required('The Password field is required!  ')
+		.min(8, 'The password is to short'),
 	confirmPassword: Yup.string()
 		.oneOf([Yup.ref('password'), null], `Password doesn't match`)
 		.required('You need to confirm your password')
 })
 
-const SignUp = (props) => {
+const MessageWrapper = styled.div`
+	position: absolute;
+	bottom: 0;
+`;
+
+const SignUp = ({ signUp, loading, error, cleanUp }) => {
+	useEffect(() => {
+		return () => {
+			cleanUp()
+		};
+	}, [cleanUp]);
 	return (
 		<Formik
 			initialValues={{
@@ -39,8 +57,9 @@ const SignUp = (props) => {
 				confirmPassword: ''
 			}}
 			validationSchema={SignUpSchema}
-			onSubmit={(values, { setSubmitting }) => {
-				console.info('[Login.js] values ======>', values);
+			onSubmit={async (values, { setSubmitting }) => {
+				await signUp(values);
+				setSubmitting(false);
 			}}
 		>
 			{({ isSubmitting, isValid }) => (
@@ -83,7 +102,12 @@ const SignUp = (props) => {
 							component={Input}
 						/>
 
-						<Button disabled={!isValid} type="submit">Submit</Button>
+						<Button disabled={!isValid || isSubmitting} loading={loading ? "Signing up..." : null} type="submit">Submit</Button>
+						<MessageWrapper>
+							<Message error show={error}>
+								{error}
+							</Message>
+						</MessageWrapper>
 					</StyledForm>
 				</FormWrapper>
 			)}
@@ -91,4 +115,14 @@ const SignUp = (props) => {
 	);
 }
 
-export default SignUp;
+const mapStateToProps = ({ auth }) => ({
+	loading: auth.loading,
+	error: auth.error
+})
+
+const mapDispatchToProps = {
+	signUp: actions.signUp,
+	cleanUp: actions.clean,
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SignUp);

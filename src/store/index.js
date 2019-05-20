@@ -10,8 +10,9 @@ import { reactReduxFirebase, getFirebase } from 'react-redux-firebase';
 import { reduxFirestore, getFirestore } from 'redux-firestore';
 
 const rrfConfig = {
-  userProfile: 'Users',
-  useFirestoreForProfile: true
+  userProfile: 'Users', // firebase root where user profiles are stored
+  attachAuthIsReady: true, // attaches auth is ready promise to store
+  useFirestoreForProfile: true,
 }
 
 let composeEnhancers =
